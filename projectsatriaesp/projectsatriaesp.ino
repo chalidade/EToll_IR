@@ -4,9 +4,11 @@
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>
 #include <IRutils.h>
+#include <Servo.h>
+Servo servoku;
  
 const char* ssid = "Andromax-M2Y-DFFC";
-const char* password = "katingtole";
+const char* password = "katingcaper";
 char url[100];
 int ir;
 const uint16_t kRecvPin = 14;
@@ -18,6 +20,8 @@ void setup () {
   
   Serial.begin(115200);
   WiFi.begin(ssid, password);
+  servoku.attach(2);
+  servoku.write(0);
   irrecv.enableIRIn();  
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
@@ -33,7 +37,7 @@ void loop() {
     Serial.println(ir);
       // Receive the next value
     HTTPClient http;  //Declare an object of class HTTPClient
-    snprintf (url, 100, "http://192.168.1.101/satria/proses.php?id=%d", ir);
+    snprintf (url, 100, "http://fahmisyaifudin.site/etoll/proses.php?id=%d", ir);
     Serial.println(url);
     http.begin(url);  //Specify request destination
     int httpCode = http.GET();
@@ -57,6 +61,10 @@ void loop() {
       Serial.println(Saldo);
       if(Saldo==0){
         Serial.println("Maaf Saldo Habis");
+      }else if(Saldo>0){
+        servoku.write(90);
+        delay(5000);
+        servoku.write(0);
       }
       
     }
